@@ -738,17 +738,41 @@ def main():
 
         st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
 
-        menu = st.radio("Select Page", [
-            "🏠 Dashboard",
-            "👨‍🎓 Student Management",
-            "👨‍🏫 Teacher Management",
-            "📊 Marks Management",
-            "💰 Fee Management",
-            "✅ Attendance Management",
-            "🤖 AI/ML Analytics",
-            "📄 Reports & Export",
-            "💾 Backup & Restore"
-        ], label_visibility="collapsed", key="main_menu")
+        # Admin Menu
+        if st.session_state.role == 'admin':
+            menu = st.radio("Select Page", [
+                "🏠 Dashboard",
+                "👨‍🎓 Student Management",
+                "👨‍🏫 Teacher Management",
+                "📊 Marks Management",
+                "💰 Fee Management",
+                "✅ Attendance Management",
+                "🤖 AI/ML Analytics",
+                "📄 Reports & Export",
+                "👥 User Management",
+                "🔐 Change Password"
+            ], label_visibility="collapsed", key="main_menu")
+        # Student Menu
+        elif st.session_state.role == 'student':
+            menu = st.radio("Select Page", [
+                "🏠 My Dashboard",
+                "📊 My Marks",
+                "💰 My Fees",
+                "✅ My Attendance",
+                "🔐 Change Password"
+            ], label_visibility="collapsed", key="main_menu")
+        # Default (regular user - teacher)
+        else:
+            menu = st.radio("Select Page", [
+                "🏠 Dashboard",
+                "👨‍🎓 Student Management",
+                "👨‍🏫 Teacher Management",
+                "📊 Marks Management",
+                "💰 Fee Management",
+                "✅ Attendance Management",
+                "🤖 AI/ML Analytics",
+                "🔐 Change Password"
+            ], label_visibility="collapsed", key="main_menu")
 
         st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
         st.markdown("<div style='border-top: 1px solid #3d4f5f; padding-top: 15px;'>", unsafe_allow_html=True)
@@ -757,25 +781,35 @@ def main():
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
     
-    # Dashboard
+    # Routing based on role and menu
     if menu == "🏠 Dashboard":
         show_dashboard()
+    elif menu == "🏠 My Dashboard":
+        show_student_dashboard()
     elif menu == "👨‍🎓 Student Management":
         show_student_management()
     elif menu == "👨‍🏫 Teacher Management":
         show_teacher_management()
     elif menu == "📊 Marks Management":
         show_marks_management()
+    elif menu == "📊 My Marks":
+        show_my_marks()
     elif menu == "💰 Fee Management":
         show_fee_management()
+    elif menu == "💰 My Fees":
+        show_my_fees()
     elif menu == "✅ Attendance Management":
         show_attendance_management()
+    elif menu == "✅ My Attendance":
+        show_my_attendance()
     elif menu == "🤖 AI/ML Analytics":
         show_ai_analytics()
     elif menu == "📄 Reports & Export":
         show_reports()
-    elif menu == "💾 Backup & Restore":
-        show_backup_restore()
+    elif menu == "👥 User Management":
+        show_user_management()
+    elif menu == "🔐 Change Password":
+        show_change_password()
 
 def show_dashboard():
     """Dashboard with statistics - Flipkart style"""
@@ -2799,110 +2833,350 @@ def show_reports():
 
     conn.close()
 
-def show_backup_restore():
-    """Backup & Restore Module"""
-    st.title("💾 Backup & Restore")
+def show_user_management():
+    """User Management Module - Admin Only"""
+    st.title("👥 User Management")
 
-    tab1, tab2 = st.tabs(["💾 Create Backup", "📥 Restore Backup"])
+    if st.session_state.role != 'admin':
+        st.error("⛔ Access Denied! Admin privileges required.")
+        return
 
+    conn = sqlite3.connect('ums_database.db')
+
+    tab1, tab2, tab3 = st.tabs(["➕ Add User", "📋 View Users", "✏️ Manage Users"])
+
+    # Add User
     with tab1:
-        st.subheader("Create Database Backup")
-        st.info("💡 Create a backup copy of your entire database for safety")
+        st.subheader("Create New User")
 
-        backup_name = st.text_input("Backup Name (optional)", placeholder="e.g., before_semester_end")
-
-        if st.button("💾 Create Backup Now", type="primary", use_container_width=True):
-            try:
-                # Create backups directory if it doesn't exist
-                os.makedirs("backups", exist_ok=True)
-
-                # Generate backup filename
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                if backup_name:
-                    backup_file = f"backups/ums_backup_{backup_name}_{timestamp}.db"
+        with st.form("add_user_form"):
+            col1, col2 = st.columns(2)
+            with col1:
+                new_username = st.text_input("Username *", placeholder="e.g., student001")
+                new_name = st.text_input("Full Name *")
+                new_password = st.text_input("Password *", type="password", placeholder="Min 6 characters")
+            with col2:
+                new_role = st.selectbox("Role *", ["student", "teacher", "admin"])
+                if new_role == "student":
+                    roll_no = st.text_input("Roll Number", placeholder="Link to student record")
                 else:
-                    backup_file = f"backups/ums_backup_{timestamp}.db"
+                    roll_no = ""
+                confirm_password = st.text_input("Confirm Password *", type="password")
 
-                # Copy database file
-                shutil.copy2('ums_database.db', backup_file)
+            submitted = st.form_submit_button("➕ Create User")
 
-                # Get file size
-                file_size = os.path.getsize(backup_file) / 1024  # KB
-
-                st.success(f"✅ **Backup Created Successfully!**")
-                st.info(f"📁 **File:** `{backup_file}`\n\n💾 **Size:** {file_size:.2f} KB")
-
-                # Download button
-                with open(backup_file, 'rb') as f:
-                    st.download_button(
-                        label="📥 Download Backup File",
-                        data=f.read(),
-                        file_name=os.path.basename(backup_file),
-                        mime="application/octet-stream",
-                        use_container_width=True
-                    )
-            except Exception as e:
-                st.error(f"❌ **Backup Failed:** {str(e)}")
-
-        st.markdown("<div style='height: 30px;'></div>", unsafe_allow_html=True)
-
-        # List existing backups
-        st.subheader("📋 Existing Backups")
-        if os.path.exists("backups"):
-            backup_files = [f for f in os.listdir("backups") if f.endswith('.db')]
-            if backup_files:
-                backup_data = []
-                for file in sorted(backup_files, reverse=True):
-                    file_path = os.path.join("backups", file)
-                    size_kb = os.path.getsize(file_path) / 1024
-                    modified_time = datetime.fromtimestamp(os.path.getmtime(file_path))
-                    backup_data.append({
-                        'File Name': file,
-                        'Size (KB)': f"{size_kb:.2f}",
-                        'Created': modified_time.strftime('%Y-%m-%d %H:%M:%S')
-                    })
-
-                st.dataframe(pd.DataFrame(backup_data), use_container_width=True, hide_index=True)
+        if submitted:
+            if not new_username or not new_name or not new_password:
+                st.error("❌ Please fill all required fields!")
+            elif len(new_password) < 6:
+                st.error("❌ Password must be at least 6 characters!")
+            elif new_password != confirm_password:
+                st.error("❌ Passwords do not match!")
             else:
-                st.info("No backups found. Create your first backup above!")
-        else:
-            st.info("No backups directory found. Create your first backup to get started!")
+                try:
+                    cursor = conn.cursor()
+                    hashed_password = hashlib.sha256(new_password.encode()).hexdigest()
+                    cursor.execute("""
+                        INSERT INTO login (username, password, name, role)
+                        VALUES (?, ?, ?, ?)
+                    """, (new_username, hashed_password, new_name, new_role))
+                    conn.commit()
+                    st.success(f"✅ **User Created Successfully!**\n\n**Username:** {new_username}\n\n**Role:** {new_role.upper()}")
+                except sqlite3.IntegrityError:
+                    st.error(f"❌ Username **{new_username}** already exists!")
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
 
+    # View Users
     with tab2:
-        st.subheader("Restore from Backup")
-        st.warning("⚠️ **Warning:** Restoring will replace your current database!")
+        st.subheader("All Users")
+        users_df = pd.read_sql("SELECT username, name, role FROM login ORDER BY role, username", conn)
+        st.dataframe(users_df, use_container_width=True, hide_index=True)
 
-        if os.path.exists("backups"):
-            backup_files = [f for f in os.listdir("backups") if f.endswith('.db')]
-            if backup_files:
-                selected_backup = st.selectbox("Select Backup to Restore", sorted(backup_files, reverse=True))
+        st.info(f"📊 **Total Users:** {len(users_df)}")
 
-                st.info(f"📁 Selected: `{selected_backup}`")
+    # Manage Users
+    with tab3:
+        st.subheader("Edit or Delete Users")
 
-                # Confirmation
-                confirm = st.checkbox("⚠️ I understand this will replace the current database")
+        users = pd.read_sql("SELECT username, name, role FROM login", conn)
+        selected_user = st.selectbox("Select User", users['username'].tolist())
 
-                if confirm:
-                    if st.button("🔄 Restore Database", type="primary", use_container_width=True):
-                        try:
-                            backup_path = os.path.join("backups", selected_backup)
+        if selected_user:
+            user_data = users[users['username'] == selected_user].iloc[0]
 
-                            # Create a backup of current database before restoring
-                            emergency_backup = f"backups/emergency_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.db"
-                            shutil.copy2('ums_database.db', emergency_backup)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.info(f"**Username:** {user_data['username']}")
+                st.info(f"**Name:** {user_data['name']}")
+                st.info(f"**Role:** {user_data['role'].upper()}")
 
-                            # Restore the selected backup
-                            shutil.copy2(backup_path, 'ums_database.db')
+            with col2:
+                if st.button("🗑️ Delete User", type="primary", use_container_width=True):
+                    if selected_user == st.session_state.username:
+                        st.error("❌ You cannot delete your own account!")
+                    else:
+                        cursor = conn.cursor()
+                        cursor.execute("DELETE FROM login WHERE username=?", (selected_user,))
+                        conn.commit()
+                        st.success(f"✅ User **{selected_user}** deleted successfully!")
+                        st.rerun()
 
-                            st.success("✅ **Database Restored Successfully!**")
-                            st.info(f"💡 **Tip:** Your previous database was backed up to `{emergency_backup}` for safety")
-                            st.warning("⚠️ **Please refresh the page** to see the restored data")
-                        except Exception as e:
-                            st.error(f"❌ **Restore Failed:** {str(e)}")
-            else:
-                st.info("No backups available to restore")
+                st.markdown("---")
+                st.subheader("Reset Password")
+                new_pwd = st.text_input("New Password", type="password", key="reset_pwd")
+                if st.button("🔐 Reset Password", use_container_width=True):
+                    if new_pwd and len(new_pwd) >= 6:
+                        cursor = conn.cursor()
+                        hashed = hashlib.sha256(new_pwd.encode()).hexdigest()
+                        cursor.execute("UPDATE login SET password=? WHERE username=?", (hashed, selected_user))
+                        conn.commit()
+                        st.success(f"✅ Password reset for **{selected_user}**!")
+                    else:
+                        st.error("❌ Password must be at least 6 characters!")
+
+    conn.close()
+
+def show_change_password():
+    """Change Password Module - All Users"""
+    st.title("🔐 Change Password")
+
+    conn = sqlite3.connect('ums_database.db')
+
+    st.info(f"👤 **Logged in as:** {st.session_state.username} ({st.session_state.role.upper()})")
+
+    with st.form("change_password_form"):
+        st.subheader("Update Your Password")
+
+        current_password = st.text_input("Current Password *", type="password")
+        new_password = st.text_input("New Password *", type="password", placeholder="Min 6 characters")
+        confirm_password = st.text_input("Confirm New Password *", type="password")
+
+        submitted = st.form_submit_button("🔐 Change Password", type="primary")
+
+    if submitted:
+        if not current_password or not new_password or not confirm_password:
+            st.error("❌ Please fill all fields!")
+        elif len(new_password) < 6:
+            st.error("❌ New password must be at least 6 characters!")
+        elif new_password != confirm_password:
+            st.error("❌ New passwords do not match!")
         else:
-            st.info("No backups directory found")
+            # Verify current password
+            cursor = conn.cursor()
+            hashed_current = hashlib.sha256(current_password.encode()).hexdigest()
+            cursor.execute("SELECT password FROM login WHERE username=?", (st.session_state.username,))
+            result = cursor.fetchone()
+
+            if result and result[0] == hashed_current:
+                # Update password
+                hashed_new = hashlib.sha256(new_password.encode()).hexdigest()
+                cursor.execute("UPDATE login SET password=? WHERE username=?", (hashed_new, st.session_state.username))
+                conn.commit()
+                st.success("✅ **Password Changed Successfully!**")
+                st.info("💡 Please remember your new password for next login.")
+            else:
+                st.error("❌ Current password is incorrect!")
+
+    conn.close()
+
+def show_student_dashboard():
+    """Student Portal - Dashboard"""
+    st.title("🏠 My Dashboard")
+
+    conn = sqlite3.connect('ums_database.db')
+
+    st.info(f"👤 **Welcome, {st.session_state.name}!**")
+
+    # Get student's roll number from login table (stored when creating student account)
+    cursor = conn.cursor()
+    cursor.execute("SELECT username FROM login WHERE username=?", (st.session_state.username,))
+    result = cursor.fetchone()
+
+    if not result:
+        st.error("❌ Student record not found!")
+        conn.close()
+        return
+
+    roll_no = st.session_state.username  # Assuming username is roll number for students
+
+    # Get student info
+    student_df = pd.read_sql(f"SELECT * FROM student WHERE roll_no='{roll_no}'", conn)
+
+    if student_df.empty:
+        st.warning("⚠️ Your student record is not linked. Please contact admin.")
+        conn.close()
+        return
+
+    student = student_df.iloc[0]
+
+    # Display student info card
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.markdown(f"""
+            <div style='background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
+                padding: 20px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,.05);'>
+                <div style='font-size: 14px; color: #878787; margin-bottom: 8px;'>Roll Number</div>
+                <div style='font-size: 20px; color: #2874f0; font-weight: 600;'>{student['roll_no']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(f"""
+            <div style='background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
+                padding: 20px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,.05);'>
+                <div style='font-size: 14px; color: #878787; margin-bottom: 8px;'>Course</div>
+                <div style='font-size: 20px; color: #388e3c; font-weight: 600;'>{student['course']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown(f"""
+            <div style='background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
+                padding: 20px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,.05);'>
+                <div style='font-size: 14px; color: #878787; margin-bottom: 8px;'>Semester</div>
+                <div style='font-size: 20px; color: #ff6f00; font-weight: 600;'>{student['semester']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col4:
+        st.markdown(f"""
+            <div style='background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
+                padding: 20px; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,.05);'>
+                <div style='font-size: 14px; color: #878787; margin-bottom: 8px;'>Status</div>
+                <div style='font-size: 20px; color: #28a745; font-weight: 600;'>{student['status']}</div>
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<div style='height: 25px;'></div>", unsafe_allow_html=True)
+
+    # Quick stats
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        marks_count = pd.read_sql(f"SELECT COUNT(*) as count FROM marks WHERE roll_no='{roll_no}'", conn).iloc[0]['count']
+        st.metric("📊 Subjects Enrolled", marks_count)
+
+    with col2:
+        attendance_df = pd.read_sql(f"SELECT AVG(attended_classes * 100.0 / total_classes) as avg FROM attendance_student WHERE roll_no='{roll_no}'", conn)
+        avg_attendance = attendance_df.iloc[0]['avg'] if not attendance_df.empty and attendance_df.iloc[0]['avg'] else 0
+        st.metric("✅ Average Attendance", f"{avg_attendance:.1f}%")
+
+    with col3:
+        fee_df = pd.read_sql(f"SELECT SUM(total_fee - paid_fee) as pending FROM fee WHERE roll_no='{roll_no}'", conn)
+        pending_fee = fee_df.iloc[0]['pending'] if not fee_df.empty and fee_df.iloc[0]['pending'] else 0
+        st.metric("💰 Pending Fees", f"₹{pending_fee:,.0f}")
+
+    conn.close()
+
+def show_my_marks():
+    """Student Portal - My Marks"""
+    st.title("📊 My Marks")
+
+    conn = sqlite3.connect('ums_database.db')
+    roll_no = st.session_state.username
+
+    marks_df = pd.read_sql(f"""
+        SELECT subject_code, semester, internal_marks, external_marks,
+               (internal_marks + external_marks) as total,
+               CASE
+                   WHEN (internal_marks + external_marks) >= 85 THEN 'A'
+                   WHEN (internal_marks + external_marks) >= 70 THEN 'B'
+                   WHEN (internal_marks + external_marks) >= 55 THEN 'C'
+                   WHEN (internal_marks + external_marks) >= 40 THEN 'D'
+                   ELSE 'F'
+               END as grade
+        FROM marks WHERE roll_no='{roll_no}'
+        ORDER BY semester, subject_code
+    """, conn)
+
+    if marks_df.empty:
+        st.info("📚 No marks records found.")
+    else:
+        st.dataframe(marks_df, use_container_width=True, hide_index=True)
+
+        # Stats
+        avg_marks = marks_df['total'].mean()
+        st.metric("📈 Average Score", f"{avg_marks:.2f}/100")
+
+    conn.close()
+
+def show_my_fees():
+    """Student Portal - My Fees"""
+    st.title("💰 My Fee Records")
+
+    conn = sqlite3.connect('ums_database.db')
+    roll_no = st.session_state.username
+
+    fee_df = pd.read_sql(f"""
+        SELECT semester, total_fee, paid_fee, (total_fee - paid_fee) as pending,
+               due_date,
+               CASE
+                   WHEN paid_fee >= total_fee THEN 'Paid'
+                   WHEN paid_fee > 0 THEN 'Partial'
+                   ELSE 'Pending'
+               END as status
+        FROM fee WHERE roll_no='{roll_no}'
+        ORDER BY semester
+    """, conn)
+
+    if fee_df.empty:
+        st.info("💳 No fee records found.")
+    else:
+        st.dataframe(fee_df, use_container_width=True, hide_index=True)
+
+        # Summary
+        total_fee = fee_df['total_fee'].sum()
+        total_paid = fee_df['paid_fee'].sum()
+        total_pending = fee_df['pending'].sum()
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Fee", f"₹{total_fee:,.0f}")
+        with col2:
+            st.metric("Paid", f"₹{total_paid:,.0f}")
+        with col3:
+            st.metric("Pending", f"₹{total_pending:,.0f}")
+
+    conn.close()
+
+def show_my_attendance():
+    """Student Portal - My Attendance"""
+    st.title("✅ My Attendance")
+
+    conn = sqlite3.connect('ums_database.db')
+    roll_no = st.session_state.username
+
+    attendance_df = pd.read_sql(f"""
+        SELECT semester, total_classes, attended_classes,
+               ROUND((attended_classes * 100.0 / total_classes), 2) as percentage
+        FROM attendance_student WHERE roll_no='{roll_no}'
+        ORDER BY semester
+    """, conn)
+
+    if attendance_df.empty:
+        st.info("📅 No attendance records found.")
+    else:
+        st.dataframe(attendance_df, use_container_width=True, hide_index=True)
+
+        # Overall stats
+        total_classes = attendance_df['total_classes'].sum()
+        total_attended = attendance_df['attended_classes'].sum()
+        overall_percentage = (total_attended / total_classes * 100) if total_classes > 0 else 0
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Classes", total_classes)
+        with col2:
+            st.metric("Attended", total_attended)
+        with col3:
+            color = "🟢" if overall_percentage >= 75 else "🔴"
+            st.metric("Overall %", f"{color} {overall_percentage:.1f}%")
+
+        if overall_percentage < 75:
+            st.warning("⚠️ Your attendance is below 75%. You may not be eligible for exams!")
+
+    conn.close()
 
 # Run the app
 if __name__ == "__main__":

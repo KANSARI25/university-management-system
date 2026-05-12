@@ -89,22 +89,33 @@ A comprehensive, modern web-based University Management System built with **Stre
 - ✅ **Excel Export** with formatted headers
 - ✅ **CSV Export** for all data tables
 
-#### 8. **💾 Backup & Restore Module** (NEW!)
-- ✅ **One-Click Backup**: Create database backups with timestamp
-- ✅ **Named Backups**: Add custom names to backups
-- ✅ **Backup List**: View all existing backups with size and date
-- ✅ **Restore Functionality**: Restore from any previous backup
-- ✅ **Emergency Backup**: Auto-backup before restore
-- ✅ **Download Backups**: Download backup files locally
+#### 8. **👥 User Management Module** (NEW!)
+- ✅ **Add Users**: Create new admin, teacher, or student accounts
+- ✅ **View All Users**: List all users with roles
+- ✅ **Manage Users**: Edit or delete existing users
+- ✅ **Reset Password**: Admin can reset any user's password
+- ✅ **Role-Based Access**: Different permissions for admin/teacher/student
 
-#### 9. **📊 Enhanced Dashboard** (NEW!)
+#### 9. **👨‍🎓 Student Portal** (NEW!)
+- ✅ **Student Dashboard**: Personalized dashboard for students
+- ✅ **My Marks**: Students can view their marks and grades
+- ✅ **My Fees**: View fee records and payment status
+- ✅ **My Attendance**: Check attendance percentage
+- ✅ **Separate Login**: Students login with their roll number
+
+#### 10. **🔐 Change Password** (NEW!)
+- ✅ **Self-Service**: All users can change their own password
+- ✅ **Secure**: Requires current password verification
+- ✅ **Validation**: Minimum 6 characters, confirmation required
+
+#### 11. **📊 Enhanced Dashboard** (NEW!)
 - ✅ **Interactive Charts**: Pie charts, bar charts using Plotly
 - ✅ **Visual Analytics**: Students by course, semester distribution
 - ✅ **Attendance Distribution**: Color-coded attendance ranges
 - ✅ **Fee Status Visualization**: Paid/Partial/Pending breakdown
 - ✅ **Real-time Statistics**: Live count of students, teachers, attendance
 
-#### 10. **🔍 Advanced Search & Filters** (NEW!)
+#### 12. **🔍 Advanced Search & Filters** (NEW!)
 - ✅ Multi-field search across all modules
 - ✅ Filter by course, semester, gender, status
 - ✅ Search by name (partial matching)
@@ -187,9 +198,16 @@ http://localhost:8501
 
 | Username | Password | Role |
 |----------|----------|------|
-| `admin` | `admin123` | Administrator |
+| `admin` | `admin123` | Administrator (Full Access) |
+| `2301001` | `student123` | Student (View Own Data) |
+| `teacher1` | `teacher123` | Teacher (Limited Access) |
 
-⚠️ **Important**: Change the password after first login for security
+⚠️ **Important**: Change passwords after first login for security
+
+### Role-Based Access:
+- **Admin**: Full access to all modules, can manage users
+- **Student**: Can only view their own marks, fees, and attendance
+- **Teacher**: Can view all data but limited edit access
 
 ---
 
