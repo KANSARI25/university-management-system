@@ -65,6 +65,67 @@ st.markdown("""
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
     }
 
+    /* Make all alerts highly visible with BLACK text and BLACK borders */
+    .stAlert {
+        padding: 16px !important;
+        border-radius: 8px !important;
+        border-width: 3px !important;
+        border-style: solid !important;
+        border-color: #000000 !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+        color: #000000 !important;
+    }
+
+    /* Error alerts - Red background with BLACK text and border */
+    [data-baseweb="notification"][kind="error"],
+    .stAlert[data-baseweb="notification"][kind="error"] {
+        background-color: #ffcccc !important;
+        border-color: #000000 !important;
+        color: #000000 !important;
+    }
+
+    /* Warning alerts - Yellow background with BLACK text and border */
+    [data-baseweb="notification"][kind="warning"],
+    .stAlert[data-baseweb="notification"][kind="warning"] {
+        background-color: #ffeb99 !important;
+        border-color: #000000 !important;
+        color: #000000 !important;
+    }
+
+    /* Info alerts - Blue background with BLACK text and border */
+    [data-baseweb="notification"][kind="info"],
+    .stAlert[data-baseweb="notification"][kind="info"] {
+        background-color: #b3d9ff !important;
+        border-color: #000000 !important;
+        color: #000000 !important;
+    }
+
+    /* Success alerts - Green background with BLACK text and border */
+    [data-baseweb="notification"][kind="success"],
+    .stAlert[data-baseweb="notification"][kind="success"] {
+        background-color: #b3ffb3 !important;
+        border-color: #000000 !important;
+        color: #000000 !important;
+    }
+
+    /* Alert icons - BLACK */
+    .stAlert svg {
+        color: #000000 !important;
+        opacity: 1 !important;
+    }
+
+    /* Alert text - BLACK and BOLD */
+    .stAlert p, .stAlert div, .stAlert span, .stAlert strong {
+        color: #000000 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Force all text inside alerts to be BLACK */
+    [data-baseweb="notification"] * {
+        color: #000000 !important;
+    }
+
     /* Sidebar styling - Amazon style dark sidebar - FORCE VISIBILITY */
     [data-testid="stSidebar"] {
         background: #232f3e !important;
@@ -601,12 +662,13 @@ def login(username, password):
     """Authenticate user"""
     conn = sqlite3.connect('ums_database.db')
     cursor = conn.cursor()
-    
-    hashed_pass = hashlib.md5(password.encode()).hexdigest()
-    cursor.execute("SELECT * FROM account WHERE username=? AND password=?", (username, hashed_pass))
+
+    # Use SHA-256 hashing (same as used in change password)
+    hashed_pass = hashlib.sha256(password.encode()).hexdigest()
+    cursor.execute("SELECT * FROM login WHERE username=? AND password=?", (username, hashed_pass))
     user = cursor.fetchone()
     conn.close()
-    
+
     if user:
         st.session_state.logged_in = True
         st.session_state.username = user[0]
