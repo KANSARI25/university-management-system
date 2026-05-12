@@ -15,9 +15,7 @@
 A comprehensive, modern web-based University Management System built with **Streamlit** and **SQLite**, featuring an Amazon/Flipkart-inspired UI design with advanced AI/ML analytics capabilities.
 
 **Developer**: Shabbir Ansari
-**Roll No**: 230879000217
-**Institution**: Hierank Business School
-**Project Type**: Major Project
+**Project Type**: BCA Major Project (2025-2026)
 **Tech Stack**: Python, Streamlit, SQLite, Plotly, Pandas, XlsxWriter
 
 ---
@@ -143,6 +141,29 @@ A comprehensive, modern web-based University Management System built with **Stre
 
 ## 🛠️ Tech Stack
 
+### **Full-Stack Architecture**
+
+This is a **complete full-stack web application** with:
+
+#### **Frontend (Presentation Layer)**
+- **Streamlit** - Web UI framework (HTML/CSS/JS auto-generated)
+- **Plotly** - Interactive charts and visualizations
+- **Custom CSS** - Amazon/Flipkart inspired styling
+
+#### **Backend (Application Layer)**
+- **Python 3.13** - Core programming language
+- **Pandas** - Data manipulation and analysis
+- **NumPy** - Numerical computing
+- **Scikit-learn** - Machine learning algorithms
+- **Hashlib** - Password encryption (SHA-256)
+- **XlsxWriter** - Excel report generation
+
+#### **Database (Data Layer)**
+- **SQLite** - Lightweight relational database
+- **6 Tables** - login, student, teacher, marks, fee, attendance
+
+### **Technology Details**
+
 | Component | Technology | Version |
 |-----------|------------|---------|
 | **Language** | Python | 3.13 |
@@ -154,6 +175,12 @@ A comprehensive, modern web-based University Management System built with **Stre
 | **Excel Export** | XlsxWriter | Latest |
 | **Excel Read** | Openpyxl | Latest |
 | **PDF Generation** | ReportLab | 4.5.0 |
+
+### **Architecture Type**
+**3-Tier Full-Stack Application**
+- **Tier 1**: Presentation (Streamlit UI)
+- **Tier 2**: Business Logic (Python)
+- **Tier 3**: Data Storage (SQLite)
 
 ---
 
@@ -167,7 +194,7 @@ A comprehensive, modern web-based University Management System built with **Stre
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/university-management-system.git
+git clone https://github.com/KANSARI25/university-management-system.git
 cd university-management-system
 ```
 
@@ -383,11 +410,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **Shabbir Ansari**
-- Roll No: 230879000217
-- Institution: Hierank Business School
 - Project: BCA606 Major Project (2025-2026)
-- Email: [Your Email]
-- GitHub: [@yourusername](https://github.com/yourusername)
+- GitHub: [@KANSARI25](https://github.com/KANSARI25)
+- Repository: [University Management System](https://github.com/KANSARI25/university-management-system)
 
 ---
 
