@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Student - UMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
+                  padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .search-box { display: flex; gap: 10px; margin-bottom: 30px; }
+        input { flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; }
+        input:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 12px 30px; background: #667eea; color: white; border: none;
+               border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn:hover { background: #764ba2; }
+        .result { display: none; margin-top: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background: #667eea; color: white; padding: 12px; text-align: left; }
+        td { padding: 12px; border-bottom: 1px solid #e0e0e0; }
+        tr:hover { background: #f8f9fa; }
+        .error { background: #ffe0e0; color: #c0392b; padding: 15px; border-radius: 8px; }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 Search Student</h1>
+        <a href="dashboard.jsp" style="color: white; text-decoration: none;">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2 style="color: #667eea; margin-bottom: 30px;">Student Search</h2>
+            
+            <div class="search-box">
+                <input type="text" id="rollNo" placeholder="Enter Roll Number (e.g., 2301001)" 
+                       pattern="[0-9]{7}">
+                <button onclick="searchStudent()" class="btn">Search</button>
+            </div>
+            
+            <div id="message"></div>
+            <div id="result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        function searchStudent() {
+            const rollNo = document.getElementById('rollNo').value.trim();
+            const messageDiv = document.getElementById('message');
+            const resultDiv = document.getElementById('result');
+            
+            if (!rollNo) {
+                messageDiv.innerHTML = '<div class="error">⚠️ Please enter a roll number!</div>';
+                return;
+            }
+            
+            if (rollNo.length !== 7) {
+                messageDiv.innerHTML = '<div class="error">⚠️ Roll number must be 7 digits!</div>';
+                return;
+            }
+            
+            messageDiv.innerHTML = '<p style="color: #3498db;">🔍 Searching...</p>';
+            
+            fetch('updateStudent?roll_no=' + rollNo)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resultDiv.style.display = 'block';
+                        resultDiv.innerHTML = `
+                            <div class="success">✓ Student Found</div>
+                            <table>
+                                <tr><th>Field</th><th>Value</th></tr>
+                                <tr><th>Roll No</th><td><strong>${data.roll_no}</strong></td></tr>
+                                <tr><th>Name</th><td>${data.name}</td></tr>
+                                <tr><th>Father's Name</th><td>${data.father_name}</td></tr>
+                                <tr><th>Date of Birth</th><td>${data.dob}</td></tr>
+                                <tr><th>Address</th><td>${data.address}</td></tr>
+                                <tr><th>Phone</th><td>${data.phone}</td></tr>
+                                <tr><th>Email</th><td>${data.email}</td></tr>
+                                <tr><th>Aadhar</th><td>${data.aadhar}</td></tr>
+                                <tr><th>Course</th><td>${data.course}</td></tr>
+                                <tr><th>Branch</th><td>${data.branch}</td></tr>
+                                <tr><th>Semester</th><td>${data.semester}</td></tr>
+                                <tr><th>Year</th><td>${data.year}</td></tr>
+                                <tr><th>Gender</th><td>${data.gender}</td></tr>
+                                <tr><th>Category</th><td>${data.category}</td></tr>
+                                <tr><th>Status</th><td><strong>${data.status}</strong></td></tr>
+                            </table>
+                        `;
+                        messageDiv.innerHTML = '';
+                    } else {
+                        messageDiv.innerHTML = '<div class="error">✗ Student not found with Roll No: ' + rollNo + '</div>';
+                        resultDiv.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    messageDiv.innerHTML = '<div class="error">❌ Error: ' + error + '</div>';
+                    resultDiv.style.display = 'none';
+                });
+        }
+        
+        // Allow Enter key to search
+        document.getElementById('rollNo').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStudent();
+            }
+        });
+    </script>
+</body>
+</html>

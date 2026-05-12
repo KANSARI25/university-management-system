@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance - UMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
+                  padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 600px; margin: 50px auto; padding: 0 20px; }
+        .card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #667eea; margin-bottom: 30px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;
+                        font-size: 14px; margin-bottom: 20px; }
+        input:focus, select:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 14px 30px; background: #667eea; color: white; border: none;
+               border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; }
+        .btn:hover { background: #764ba2; }
+        .required { color: #e74c3c; }
+        .info-box { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .percentage-display { background: #f8f9fa; padding: 15px; border-radius: 8px; 
+                              text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✅ Mark Student Attendance</h1>
+        <a href="dashboard.jsp" style="color: white; text-decoration: none;">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Record Attendance</h2>
+            
+            <div class="info-box">
+                <strong>📌 Note:</strong> Enter the total classes conducted and classes attended by the student for the selected semester.
+            </div>
+
+            <form action="addStudentAttendance" method="POST" onsubmit="return validateForm()">
+                <label>Roll Number <span class="required">*</span></label>
+                <input type="text" name="roll_no" id="rollNo" required pattern="[0-9]{7}" 
+                       placeholder="Enter Roll Number (e.g., 2301001)">
+                
+                <label>Semester <span class="required">*</span></label>
+                <select name="semester" required>
+                    <option value="">Select Semester</option>
+                    <option value="1">1st Semester</option>
+                    <option value="2">2nd Semester</option>
+                    <option value="3">3rd Semester</option>
+                    <option value="4">4th Semester</option>
+                    <option value="5">5th Semester</option>
+                    <option value="6">6th Semester</option>
+                    <option value="7">7th Semester</option>
+                    <option value="8">8th Semester</option>
+                </select>
+                
+                <label>Total Classes <span class="required">*</span></label>
+                <input type="number" name="total_classes" id="totalClasses" required min="1" 
+                       placeholder="Total classes conducted" onchange="calculatePercentage()">
+                
+                <label>Classes Attended <span class="required">*</span></label>
+                <input type="number" name="attended_classes" id="attendedClasses" required min="0" 
+                       placeholder="Classes attended" onchange="calculatePercentage()">
+                
+                <div class="percentage-display" id="percentageDisplay" style="display:none;">
+                    <strong>Attendance Percentage: <span id="percentage">0</span>%</strong><br>
+                    <span id="status" style="font-size: 14px;"></span>
+                </div>
+                
+                <button type="submit" class="btn">Mark Attendance</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function calculatePercentage() {
+            const total = parseInt(document.getElementById('totalClasses').value) || 0;
+            const attended = parseInt(document.getElementById('attendedClasses').value) || 0;
+            
+            if (total > 0 && attended >= 0) {
+                const percentage = ((attended / total) * 100).toFixed(2);
+                document.getElementById('percentage').textContent = percentage;
+                document.getElementById('percentageDisplay').style.display = 'block';
+                
+                const statusSpan = document.getElementById('status');
+                if (percentage >= 75) {
+                    statusSpan.textContent = '✓ Good Attendance';
+                    statusSpan.style.color = '#27ae60';
+                } else if (percentage >= 60) {
+                    statusSpan.textContent = '⚠️ Warning: Below 75%';
+                    statusSpan.style.color = '#f39c12';
+                } else {
+                    statusSpan.textContent = '❌ Critical: Below 60%';
+                    statusSpan.style.color = '#e74c3c';
+                }
+            }
+        }
+        
+        function validateForm() {
+            const total = parseInt(document.getElementById('totalClasses').value);
+            const attended = parseInt(document.getElementById('attendedClasses').value);
+            
+            if (attended > total) {
+                alert('Attended classes cannot be greater than total classes!');
+                return false;
+            }
+            
+            return confirm('Are you sure you want to mark this attendance?');
+        }
+    </script>
+</body>
+</html>

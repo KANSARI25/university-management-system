@@ -1,0 +1,26 @@
+# University Management System - Python Dependencies
+# BCA606 Major Project (2025-2026)
+# Author: Shabbir Ansari
+
+# Core Framework
+streamlit>=1.45.0
+
+# Database
+sqlite3  # Built-in with Python
+
+# Data Processing
+pandas>=2.2.0
+numpy>=2.0.0
+
+# Visualization
+plotly>=6.2.0
+
+# Excel Export
+openpyxl>=3.1.5
+xlsxwriter>=3.2.9
+
+# PDF Generation (Future Use)
+reportlab>=4.5.0
+
+# Additional Utilities
+pillow>=11.3.0

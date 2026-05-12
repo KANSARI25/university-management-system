@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Marks - UMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
+                  padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 600px; margin: 50px auto; padding: 0 20px; }
+        .card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #667eea; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #e0e0e0;
+                        border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 14px 30px; background: #667eea; color: white; border: none;
+               border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; }
+        .btn:hover { background: #764ba2; }
+        .required { color: #e74c3c; }
+        .marks-info { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Add Student Marks</h1>
+        <a href="dashboard.jsp" style="color: white; text-decoration: none;">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Enter Marks Information</h2>
+            
+            <div class="marks-info">
+                <strong>📌 Marking Scheme:</strong><br>
+                Internal Marks: 0-30 | External Marks: 0-70<br>
+                Grading: A(85+) | B(70-84) | C(55-69) | D(40-54) | F(<40)
+            </div>
+
+            <form action="addMarks" method="POST" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label>Roll Number <span class="required">*</span></label>
+                    <input type="text" name="roll_no" required pattern="[0-9]{7}" 
+                           placeholder="Enter Roll Number (e.g., 2301001)">
+                </div>
+
+                <div class="form-group">
+                    <label>Subject Code <span class="required">*</span></label>
+                    <select name="subject_code" required>
+                        <option value="">Select Subject</option>
+                        <option value="BCA101">BCA101 - Programming in C</option>
+                        <option value="BCA102">BCA102 - Data Structures</option>
+                        <option value="BCA103">BCA103 - Database Management</option>
+                        <option value="BCA104">BCA104 - Web Technologies</option>
+                        <option value="BCA105">BCA105 - Operating Systems</option>
+                        <option value="BCA106">BCA106 - Software Engineering</option>
+                        <option value="BCA201">BCA201 - Java Programming</option>
+                        <option value="BCA202">BCA202 - Python Programming</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Semester <span class="required">*</span></label>
+                    <select name="semester" required>
+                        <option value="">Select Semester</option>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option>
+                        <option value="4">4th Semester</option>
+                        <option value="5">5th Semester</option>
+                        <option value="6">6th Semester</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Internal Marks <span class="required">*</span></label>
+                        <input type="number" name="internal_marks" id="internal" required 
+                               min="0" max="30" placeholder="Max 30">
+                    </div>
+                    <div class="form-group">
+                        <label>External Marks <span class="required">*</span></label>
+                        <input type="number" name="external_marks" id="external" required 
+                               min="0" max="70" placeholder="Max 70">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <strong>Total Marks: <span id="total">0</span>/100</strong><br>
+                        <strong>Grade: <span id="grade">-</span></strong>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn">Add Marks</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const internalInput = document.getElementById('internal');
+        const externalInput = document.getElementById('external');
+        const totalSpan = document.getElementById('total');
+        const gradeSpan = document.getElementById('grade');
+
+        function calculateTotal() {
+            const internal = parseInt(internalInput.value) || 0;
+            const external = parseInt(externalInput.value) || 0;
+            const total = internal + external;
+            
+            totalSpan.textContent = total;
+            
+            if (total >= 85) {
+                gradeSpan.textContent = 'A';
+                gradeSpan.style.color = '#27ae60';
+            } else if (total >= 70) {
+                gradeSpan.textContent = 'B';
+                gradeSpan.style.color = '#3498db';
+            } else if (total >= 55) {
+                gradeSpan.textContent = 'C';
+                gradeSpan.style.color = '#f39c12';
+            } else if (total >= 40) {
+                gradeSpan.textContent = 'D';
+                gradeSpan.style.color = '#e67e22';
+            } else if (total > 0) {
+                gradeSpan.textContent = 'F';
+                gradeSpan.style.color = '#e74c3c';
+            } else {
+                gradeSpan.textContent = '-';
+                gradeSpan.style.color = '#666';
+            }
+        }
+
+        internalInput.addEventListener('input', calculateTotal);
+        externalInput.addEventListener('input', calculateTotal);
+
+        function validateForm() {
+            const internal = parseInt(internalInput.value);
+            const external = parseInt(externalInput.value);
+            
+            if (internal > 30) {
+                alert('Internal marks cannot exceed 30!');
+                return false;
+            }
+            if (external > 70) {
+                alert('External marks cannot exceed 70!');
+                return false;
+            }
+            
+            return confirm('Are you sure you want to add these marks?');
+        }
+    </script>
+</body>
+</html>

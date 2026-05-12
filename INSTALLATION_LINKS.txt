@@ -1,0 +1,59 @@
+================================================================
+  UMS PROJECT - REQUIRED SOFTWARE DOWNLOADS
+================================================================
+
+Download and install these in order:
+
+1. JAVA JDK (Required for Java Servlets)
+   https://www.oracle.com/java/technologies/downloads/#jdk17-windows
+   → Download: Windows x64 Installer
+   → Install with default settings
+
+2. APACHE TOMCAT 9 (Required for running Java web apps)
+   https://tomcat.apache.org/download-90.cgi
+   → Scroll to "Binary Distributions"
+   → Download: 64-bit Windows zip
+   → Extract to: C:\tomcat
+
+3. MYSQL SERVER (Required for database)
+   https://dev.mysql.com/downloads/installer/
+   → Download: mysql-installer-community (smaller version)
+   → Install: MySQL Server + MySQL Workbench
+   → Set root password: root123 (or remember your own)
+
+4. MYSQL CONNECTOR JAR (Required for Java-MySQL connection)
+   https://dev.mysql.com/downloads/connector/j/
+   → Choose: Platform Independent (ZIP)
+   → Download and extract
+   → Find: mysql-connector-j-8.X.XX.jar
+   → Copy to: C:\tomcat\lib\
+
+5. PYTHON (Already installed ✓)
+   → You have this! Just install packages:
+   → pip install flask flask-cors mysql-connector-python pandas numpy
+
+================================================================
+INSTALLATION ORDER:
+================================================================
+
+1. Install Java JDK
+2. Extract Tomcat to C:\tomcat
+3. Install MySQL Server
+4. Copy MySQL Connector JAR to C:\tomcat\lib\
+5. Install Python packages (pip install ...)
+
+================================================================
+AFTER INSTALLATION:
+================================================================
+
+1. Run: START_DATABASE.bat (to start MySQL)
+2. Run: SETUP_DATABASE.bat (to create database and tables)
+3. Edit passwords in:
+   - src/main/java/utils/conn.java (line 31)
+   - ml_backend/app.py (line 18)
+4. Deploy application to Tomcat
+5. Start Tomcat
+6. Run: ml_backend/START_ML_BACKEND.bat
+7. Open: http://localhost:8080/ums/login.html
+
+================================================================

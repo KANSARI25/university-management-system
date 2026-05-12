@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Fee Record - UMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
+                  padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 600px; margin: 50px auto; padding: 0 20px; }
+        .card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #667eea; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #e0e0e0;
+                        border-radius: 8px; font-size: 14px; }
+        input:focus, select:focus { outline: none; border-color: #667eea; }
+        .btn { padding: 14px 30px; background: #667eea; color: white; border: none;
+               border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; }
+        .btn:hover { background: #764ba2; }
+        .required { color: #e74c3c; }
+        .info-box { background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .fee-display { background: #f8f9fa; padding: 15px; border-radius: 8px; 
+                       text-align: center; margin-bottom: 20px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💰 Add Fee Record</h1>
+        <a href="dashboard.jsp" style="color: white; text-decoration: none;">← Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>Fee Information</h2>
+            
+            <div class="info-box">
+                <strong>📌 Fee Structure:</strong><br>
+                Semester Fee: ₹30,000 - ₹50,000<br>
+                Exam Fee: ₹2,000 - ₹5,000
+            </div>
+
+            <form action="addFees" method="POST" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label>Roll Number <span class="required">*</span></label>
+                    <input type="text" name="roll_no" required pattern="[0-9]{7}" 
+                           placeholder="Enter Roll Number (e.g., 2301001)">
+                </div>
+
+                <div class="form-group">
+                    <label>Semester <span class="required">*</span></label>
+                    <select name="semester" required>
+                        <option value="">Select Semester</option>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option>
+                        <option value="4">4th Semester</option>
+                        <option value="5">5th Semester</option>
+                        <option value="6">6th Semester</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Total Fee (₹) <span class="required">*</span></label>
+                        <input type="number" name="total_fee" id="totalFee" required 
+                               min="1000" placeholder="e.g., 50000" onchange="calculatePending()">
+                    </div>
+                    <div class="form-group">
+                        <label>Paid Fee (₹) <span class="required">*</span></label>
+                        <input type="number" name="paid_fee" id="paidFee" required 
+                               min="0" placeholder="e.g., 25000" onchange="calculatePending()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Due Date <span class="required">*</span></label>
+                    <input type="date" name="due_date" required>
+                </div>
+
+                <div class="fee-display" id="feeDisplay" style="display:none;">
+                    <strong>Pending Amount: ₹<span id="pending">0</span></strong><br>
+                    <span id="status" style="font-size: 14px;"></span>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn">Add Fee Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function calculatePending() {
+            const total = parseInt(document.getElementById('totalFee').value) || 0;
+            const paid = parseInt(document.getElementById('paidFee').value) || 0;
+            
+            if (total > 0) {
+                const pending = total - paid;
+                document.getElementById('pending').textContent = pending.toLocaleString();
+                document.getElementById('feeDisplay').style.display = 'block';
+                
+                const statusSpan = document.getElementById('status');
+                if (paid >= total) {
+                    statusSpan.textContent = '✓ Fully Paid';
+                    statusSpan.style.color = '#27ae60';
+                } else if (paid > 0) {
+                    statusSpan.textContent = '⚠️ Partially Paid';
+                    statusSpan.style.color = '#f39c12';
+                } else {
+                    statusSpan.textContent = '❌ Payment Pending';
+                    statusSpan.style.color = '#e74c3c';
+                }
+            }
+        }
+        
+        function validateForm() {
+            const total = parseInt(document.getElementById('totalFee').value);
+            const paid = parseInt(document.getElementById('paidFee').value);
+            
+            if (paid > total) {
+                alert('Paid fee cannot be greater than total fee!');
+                return false;
+            }
+            
+            return confirm('Are you sure you want to add this fee record?');
+        }
+    </script>
+</body>
+</html>
