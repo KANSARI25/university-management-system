@@ -12,7 +12,7 @@
 ## 📌 Project Overview
 
 **Major Project (BCA606 - 2025-2026)**
-A comprehensive, modern web-based University Management System built with **Streamlit** and **SQLite**, featuring an Amazon/Flipkart-inspired UI design with advanced AI/ML analytics capabilities.
+A comprehensive, modern web-based University Management System built with **Streamlit** and **SQLite**, featuring a clean, professional UI design with advanced AI/ML analytics capabilities.
 
 **Developer**: Shabbir Ansari
 **Project Type**: BCA Major Project (2025-2026)
@@ -121,7 +121,7 @@ A comprehensive, modern web-based University Management System built with **Stre
 - ✅ Export filtered results
 
 ### 🎨 **UI/UX Features**
-- ✅ **Modern Design**: Amazon/Flipkart inspired clean interface
+- ✅ **Modern Design**: Clean, professional interface
 - ✅ **Success Popups**: 5-second auto-close modals with change tracking
 - ✅ **Change Tracking**: Shows "before → after" for all updates
 - ✅ **Responsive Layout**: Works on desktop and mobile
@@ -148,7 +148,7 @@ This is a **complete full-stack web application** with:
 #### **Frontend (Presentation Layer)**
 - **Streamlit** - Web UI framework (HTML/CSS/JS auto-generated)
 - **Plotly** - Interactive charts and visualizations
-- **Custom CSS** - Amazon/Flipkart inspired styling
+- **Custom CSS** - Professional styling with high-contrast alerts
 
 #### **Backend (Application Layer)**
 - **Python 3.13** - Core programming language
@@ -332,7 +332,7 @@ The enhanced dashboard provides:
 ### What Makes This Project Special?
 
 1. **✅ Complete CRUD Operations**: All 5 modules fully functional
-2. **🎨 Professional UI**: Amazon/Flipkart inspired modern design
+2. **🎨 Professional UI**: Clean, modern design with intuitive navigation
 3. **📊 Interactive Visualizations**: Plotly charts and graphs
 4. **🤖 AI/ML Integration**: Performance prediction and analytics
 5. **💾 Data Management**: Backup, restore, export capabilities
